@@ -121,7 +121,7 @@ const userSchema = new mongoose.Schema(
     aadharImage: { type: String },
     paymentQr:{type: String},
     isPaymentConfirm:{type: Boolean, required: true, default : false},
-    role: { type: String, enum: ["user", "admin"], default: "user" },
+    isAdmin:{ type: Boolean, required: true, default : false},
     district: {
       type: String,
       enum: ["निवडा", "बुलडाणा"],

@@ -1,21 +1,24 @@
 #!/bin/bash
 
-# ✅ Set up variables
+# Variables
 KEY_PATH="/home/abhishek/Downloads/shetimajuri.pem"
 REMOTE_USER="ubuntu"
 REMOTE_HOST="13.204.147.218"
-REMOTE_DIR="~/"
+REMOTE_DIR="~/backend"
 LOCAL_DIR="/home/abhishek/Desktop/ShetiMajuri/backend"
 
 echo "📦 Deploying ShetiMajuri app..."
 
-# ✅ Upload project folder to EC2 instance
-scp -i "$KEY_PATH" -r "$LOCAL_DIR" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR"
+# Upload code (exclude .git + node_modules)
+rsync -avz --exclude='.git' --exclude='node_modules' -e "ssh -i $KEY_PATH" "$LOCAL_DIR/" "$REMOTE_USER@$REMOTE_HOST:$REMOTE_DIR"
 
-# ✅ SSH into the EC2 instance, restart PM2 app and Nginx
+# SSH into EC2 and restart services
 ssh -i "$KEY_PATH" "$REMOTE_USER@$REMOTE_HOST" << 'EOF'
   cd ~/backend
-  echo "🔁 Pulling latest changes and restarting PM2 app..."
+  echo "📦 Installing dependencies..."
+  npm install --production
+
+  echo "🔁 Restarting PM2 app..."
   pm2 restart shetimajuri || pm2 start server.js --name shetimajuri
 
   echo "🔄 Restarting Nginx..."

@@ -3,7 +3,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
 import apiRoutes from './api/index.js';
 import connectDB from './api/config/db.config.js';
 
@@ -22,14 +21,14 @@ app.use(express.json());
 connectDB();
 
 // ✅ Serve static files from "public" folder
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public/dist')));
 
 // ✅ API routes
 app.use('/api', apiRoutes);
 
 // ✅ Root route serves the index.html file
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(__dirname, 'public/dist', 'index.html'));
 });
 
 // Start server
