@@ -1,20 +1,19 @@
-export const authenticate = (req, res, next) => {
+import jwt from 'jsonwebtoken';
+
+const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  console.log('Authorization header:', authHeader);  // Add this line
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "No token provided" });
+  }
 
-  const token = authHeader && authHeader.startsWith('Bearer ')
-    ? authHeader.split(' ')[1]
-    : null;
-
-  console.log('Extracted token:', token);
-
-  if (!token) return res.status(401).json({ message: 'No token provided' });
-
+  const token = authHeader.split(" ")[1];
   try {
-    const decoded = verifyToken(token);
-    req.user = decoded;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // contains user id
     next();
   } catch (err) {
-    res.status(401).json({ message: 'Invalid token' });
+    res.status(401).json({ message: "Invalid token" });
   }
 };
+
+export default authMiddleware;

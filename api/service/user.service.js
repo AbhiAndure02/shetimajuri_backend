@@ -1,53 +1,59 @@
-import User from '../model/user.model.js';
-import bcrypt from 'bcryptjs';
-import { generateToken } from '../helper/token.helper.js';
+import User from "../model/user.model.js";
+import bcrypt from "bcryptjs";
+import { generateToken } from "../helper/token.helper.js";
 
+// Register
 export const registerUser = async (userData) => {
   const existing = await User.findOne({ phone: userData.phone });
-  if (existing) throw new Error('User already exists');
+  if (existing) throw new Error("User already exists");
 
   userData.password = await bcrypt.hash(userData.password, 10);
   const user = await User.create(userData);
-  const token = generateToken({ id: user._id, role: user.role });
 
+  const token = generateToken({ id: user._id });
   return { user, token };
 };
 
+// Login
 export const loginUser = async ({ phone, password }) => {
   const user = await User.findOne({ phone });
-  if (!user) throw new Error('User not found');
+  if (!user) throw new Error("User not found");
 
   const match = await bcrypt.compare(password, user.password);
-  if (!match) throw new Error('Invalid credentials');
+  if (!match) throw new Error("Invalid credentials");
 
-  const token = generateToken({ id: user._id, role: user.role });
+  const token = generateToken({ id: user._id });
   return { user, token };
 };
-// service/user.service.js
 
-
-export const addFamilyMember = async (userId, memberData) => {
-  // Find the user by ID
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new Error('User not found');
-  }
-
-  // Add the family member data to the user's familyMembers array
-  user.familyMembers.push(memberData);
-
-  // Save the updated user
-  await user.save();
-
-  // Return the newly added family member
-  return user.familyMembers[user.familyMembers.length - 1];
-};
-
-export const getAllUser = async (currentUser) => {
-  if (currentUser.role !== 'admin') {
-    throw new Error("You don't have access");
-  }
-
+// Get All Users
+export const getAllUsers = async () => {
   const users = await User.find().select("-password");
   return users;
+};
+
+// Get User By ID
+export const getUserById = async (id) => {
+  const user = await User.findById(id).select("-password");
+  if (!user) throw new Error("User not found");
+  return user;
+};
+
+// Update User By ID
+export const updateUserById = async (id, updateData) => {
+  if (updateData.password) {
+    updateData.password = await bcrypt.hash(updateData.password, 10);
+  }
+  const updatedUser = await User.findByIdAndUpdate(id, updateData, {
+    new: true,
+  }).select("-password");
+  if (!updatedUser) throw new Error("User not found");
+  return updatedUser;
+};
+
+// Delete User By ID
+export const deleteUserById = async (id) => {
+  const deletedUser = await User.findByIdAndDelete(id);
+  if (!deletedUser) throw new Error("User not found");
+  return;
 };

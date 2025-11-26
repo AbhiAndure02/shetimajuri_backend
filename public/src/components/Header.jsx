@@ -11,7 +11,8 @@ const Header = () => {
     { path: '/about', label: 'आमच्याविषयी' },
     { path: '/services', label: 'सेवा' },
     { path: '/products', label: 'उत्पादने' },
-    { path: '/contact', label: 'संपर्क' }
+    { path: '/admin/dashboard', label: 'संपर्क' },
+     { path '/admin/dashboard', label:'admin'},
   ];
 
   return (
@@ -24,8 +25,7 @@ const Header = () => {
             <span className="text-sm">✉️ shetimajur1992@gmail.com</span>
           </div>
           <div className="flex space-x-4">
-            <button className="text-sm hover:text-green-300 transition">नोंदणी</button>
-            <button className="text-sm hover:text-green-300 transition">लॉगिन</button>
+            <Link to = '/signin' className="text-sm hover:text-green-300 transition">लॉगिन</Link>
           </div>
         </div>
       </div>

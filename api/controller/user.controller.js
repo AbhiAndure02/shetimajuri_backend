@@ -1,9 +1,9 @@
-import * as UserService from '../service/user.service.js';
+import * as UserService from "../service/user.service.js";
 
-
-
-export const register = async (req, res) => {
+// Register
+export const registerUser = async (req, res) => {
   try {
+    
     const { user, token } = await UserService.registerUser(req.body);
     res.status(201).json({ user, token });
   } catch (err) {
@@ -11,7 +11,8 @@ export const register = async (req, res) => {
   }
 };
 
-export const login = async (req, res) => {
+// Login
+export const loginUser = async (req, res) => {
   try {
     const { user, token } = await UserService.loginUser(req.body);
     res.status(200).json({ user, token });
@@ -20,17 +21,51 @@ export const login = async (req, res) => {
   }
 };
 
-
-export const addFamilyMember = async (req, res) => {
+// Logout
+export const logoutUser = async (req, res) => {
   try {
-    const userId = req.user.id;
+    // For stateless JWT, just return success. Client should remove token.
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-    const newMember = await UserService.addFamilyMember(userId, req.body);
+// Get All Users
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await UserService.getAllUsers();
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
-    res.status(201).json({
-      message: 'Family member added successfully',
-      member: newMember,
-    });
+// Get User By ID
+export const getUserById = async (req, res) => {
+  try {
+    const user = await UserService.getUserById(req.params.id);
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
+// Update User By ID
+export const updateUserById = async (req, res) => {
+  try {
+    const updatedUser = await UserService.updateUserById(req.params.id, req.body);
+    res.status(200).json(updatedUser);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Delete User By ID
+export const deleteUserById = async (req, res) => {
+  try {
+    await UserService.deleteUserById(req.params.id);
+    res.status(200).json({ message: "User deleted successfully" });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

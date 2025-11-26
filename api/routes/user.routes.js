@@ -1,13 +1,25 @@
-import express from 'express';
-import * as UserController from '../controller/user.controller.js';
-import { authenticate } from '../middleware/auth.middleware.js';
+import express from "express";
+import {
+  registerUser,
+  loginUser,
+  logoutUser,
+  getAllUsers,
+  getUserById,
+  updateUserById,
+  deleteUserById,
+} from "../controller/user.controller.js";
 
 const router = express.Router();
 
-router.post('/register', UserController.register);
-router.post('/login', UserController.login);
+// Public routes
+router.post("/register", registerUser);
+router.post("/login", loginUser);
+router.get("/all", getAllUsers); // Can be public or protected
 
-// 👨‍👩‍👧 Add Family Member (protected)
-router.post('/family', authenticate, UserController.addFamilyMember);
+// Protected routes (add auth middleware if required)
+router.post("/logout", logoutUser);
+router.get("/:id", getUserById);
+router.put("/:id", updateUserById);
+router.delete("/:id", deleteUserById);
 
 export default router;
